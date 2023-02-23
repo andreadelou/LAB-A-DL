@@ -26,6 +26,8 @@ class convertExpression:
                 new_regex += "."
             if regex[i] == "*" and regex[i+1] == "(":
                 new_regex += "."
+            if regex[i] == "?" and regex[i+1] == "(": #se agrega ya que al funcionar como el kleene, hay que tratarlo de la misma manera
+                new_regex += "."
             if regex[i] == ")" and regex[i+1] not in simbolos:
                 new_regex += "."
             if regex[i] == "*" and regex[i+1] not in simbolos:
@@ -66,7 +68,7 @@ class convertExpression:
 
     # Funcion para chequear si es un operando/letra
     def operando(self, caracter):
-        if(caracter.isalpha() or caracter == "ε"):
+        if(caracter.isalpha() or caracter == "ε" or caracter.isnumeric()):
             return True
         else:
             return False
