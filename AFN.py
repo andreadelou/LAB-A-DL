@@ -134,40 +134,49 @@ class AFN():
                 self.afn_final.append({})
                 self.afn_final.append({})
                 stack.append([c1, c2])
-                # se conecta el final de r1 con el inicio de r2
-                self.afn_final[r1]['ε'] = r2
-                # se conecta el final de r2 con el inicio de r1
-                self.afn_final[r2]['ε'] = r1
+                self.afn_final[r2]['ε'] = (r1, c2)
+                
                 if start == r1:
                     start = c1
                 if end == r2:
                     end = c2
-                self.transiciones_splited.append([r1, "ε", r2])
                 self.transiciones_splited.append([r2, "ε", r1])
-            elif i == '?':
+                self.transiciones_splited.append([r2, "ε", c2])
+                self.transiciones_splited.append([c1, "ε", r1])
+
+            # si es un ?
+            elif i == "?":
                 r1, r2 = stack.pop()
                 counter = counter+1
                 c1 = counter
                 if c1 not in self.estados:
                     self.estados.append(c1)
-                    counter = counter+1
+                counter = counter+1
                 c2 = counter
                 if c2 not in self.estados:
                     self.estados.append(c2)
                 self.afn_final.append({})
                 self.afn_final.append({})
-                stack.append([c1, r2])
-                self.afn_final[c1]['ε'] = (r1, c2)
-                if start == r1:
-                    start = c1
+                
+                stack.append([c1, c2])
+                self.afn_final[c1]['ε'] = (r1, r2)
+                self.afn_final[r1]['ε'] = c2
+                self.afn_final[c1]['ε'] = c2
                 if end == r2:
                     end = c2
-                self.transiciones_splited.append([r2, "ε", c2])
+                if start == r1:
+                    start = c1
+                self.transiciones_splited.append([c1, "ε", r1])
+                self.transiciones_splited.append([c1, "ε", r2])
                 self.transiciones_splited.append([r1, "ε", c2])
-                self.transiciones_splited.append([r1, "ε", r2])
-                self.transiciones_splited.append([c1, "ε", c2])
+                if r2 in self.afn_final:
+                    self.transiciones_splited.append([r1, "ε", end])
+                    self.afn_final.remove(r2)
+
 
 # En este caso, cuando encontramos el símbolo "?", sacamos un elemento de la pila y creamos dos nuevos estados, c1 y c2. Luego, agregamos una transición de c1 a r1 con ε, y de r2 a c2 con ε. Además, agregamos transiciones de r1 a c2 con ε, y de r1 a r2 con ε. Finalmente, agregamos todas las transiciones a la lista de transiciones splited.
+        
+        
         # asignacion de estados finales e iniciales
         self.e0 = start
         self.ef = end
