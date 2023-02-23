@@ -229,8 +229,7 @@ class AFN():
             if transicion[1] == "ε":
                 g.edge(str(transicion[0]), str(transicion[2]), label="ε")
             else:
-                g.edge(str(transicion[0]), str(
-                    transicion[2]), label=transicion[1])
+                g.edge(str(transicion[0]), str(transicion[2]), label=transicion[1])
             
         
         # Guardar grafo en archivo y convertir a imagen
