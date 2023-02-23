@@ -14,5 +14,9 @@ postfix = conversion.res
 print("\nPostfix: ", postfix)
 
 #Postfix a AFN
-resultado=AFN(postfix)
-resultado.conversion()
+# resultado=AFN(postfix)
+# resultado.conversion()
+
+afn = AFN(postfix)
+afn.conversion()
+afn.graph_afn()

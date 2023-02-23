@@ -1,7 +1,7 @@
 from re import S
 import pandas as pd
 import os.path
-import time
+from graphviz import Digraph
 
 class AFN():
     def __init__(self, postfix):
@@ -23,7 +23,6 @@ class AFN():
 
     def conversion(self):
         print("\nConvirtiendo de Postfix a AFN...")
-        t0 = time.perf_counter()
         simbolos = []
         postfix = self.postfix
         for i in postfix:
@@ -120,6 +119,31 @@ class AFN():
                 self.transiciones_splited.append([c1, "ε", r11])
                 self.transiciones_splited.append([r12, "ε", c2])
                 self.transiciones_splited.append([r22, "ε", c2])
+            
+            #si es un +
+            elif i == "+":
+                r1, r2 = stack.pop()
+                counter = counter+1
+                c1 = counter
+                if c1 not in self.estados:
+                    self.estados.append(c1)
+                counter = counter+1
+                c2 = counter
+                if c2 not in self.estados:
+                    self.estados.append(c2)
+                self.afn_final.append({})
+                self.afn_final.append({})
+                stack.append([c1, c2])
+                # se conecta el final de r1 con el inicio de r2
+                self.afn_final[r1]['ε'] = r2
+                # se conecta el final de r2 con el inicio de r1
+                self.afn_final[r2]['ε'] = r1
+                if start == r1:
+                    start = c1
+                if end == r2:
+                    end = c2
+                self.transiciones_splited.append([r1, "ε", r2])
+                self.transiciones_splited.append([r2, "ε", r1])
 
         # asignacion de estados finales e iniciales
         self.e0 = start
@@ -138,7 +162,6 @@ class AFN():
                 ef = i
             self.estados_list.append(str(self.estados[i]))
         self.estados_list = ", ".join(self.estados_list)
-        t1 = time.perf_counter()
 
         nombre_archivo = input('\nIngrese el nombre del archivo para guardar el AFN convertido de la Regex -> ')
 
@@ -164,5 +187,28 @@ class AFN():
                 f.write(string_afn)
 
             print("\nArchivo de AFN escrito con éxito")
-
-        print('\nEl tiempo para pasar de regex/postfix a AFN es: ',t1-t0)
+    
+    def graph_afn(self, filename='afn'):
+        # Crear grafo
+        g = Digraph('G', filename=filename, format='png')
+        
+        # Agregar nodos
+        for estado in self.estados:
+            if estado == self.e0:
+                g.node(str(estado), shape='doublecircle')
+            elif estado == self.ef:
+                g.node(str(estado), shape='doublecircle')
+            else:
+                g.node(str(estado), shape="circle")
+        
+        # Agregar transiciones
+        for transicion in self.transiciones_splited:
+            if transicion[1] == "ε":
+                g.edge(str(transicion[0]), str(transicion[2]), label="ε")
+            else:
+                g.edge(str(transicion[0]), str(
+                    transicion[2]), label=transicion[1])
+            
+        
+        # Guardar grafo en archivo y convertir a imagen
+        g.render(view=True)
