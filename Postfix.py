@@ -82,42 +82,66 @@ class convertExpression:
         except KeyError:
             return False
     
+    def revision2(self, exp):
+        bandera = 2
+        
+        for caracter in exp:
+            if caracter == '(' :
+                bandera = bandera - 1
+            if caracter == ')' :
+                bandera = bandera - 1
+                if bandera != 0:
+                    return False
+                
+        return bandera ==2
+                
+        
+            
+        
      # Funcion principal que retorna la expresion regular a postfix
     def RegexToPostfix(self, exp): 
-        exp = self.addPuntos(exp)
-        # se itera sobre cada caracter de la expresion
-        for i in exp:
+        
+        self.verificar = self.revision2(exp)
+        
+        if self.verificar == True:
+            
+            exp = self.addPuntos(exp)
+            # se itera sobre cada caracter de la expresion
+            for i in exp:
 
-            # si el caracter es un operando/letra, añadirlo al output
-            if self.operando(i):
-                if self.peek() == "*":
-                    self.output.append(self.pop())
-                self.output.append(i)
+                # si el caracter es un operando/letra, añadirlo al output
+                if self.operando(i):
+                    if self.peek() == "*":
+                        self.output.append(self.pop())
+                    self.output.append(i)
 
-            # si es un "(" se manda al stack
-            elif i == '(':
-                self.push(i)
+                # si es un "(" se manda al stack
+                elif i == '(':
+                    self.push(i)
 
-            # si es un ")" sacar todo del stack
-            elif i == ')':
-                while((not self.vacio()) and
-                      self.peek() != '('):
-                    a = self.pop()
-                    self.output.append(a)
-                if (not self.vacio() and self.peek() != '('):
-                    return -1
+                # si es un ")" sacar todo del stack
+                elif i == ')':
+                    while((not self.vacio()) and
+                        self.peek() != '('):
+                        a = self.pop()
+                        self.output.append(a)
+                    if (not self.vacio() and self.peek() != '('):
+                        return -1
+                    else:
+                        self.pop()
+
+                # cuando se encuentra un operador
                 else:
-                    self.pop()
+                    while(not self.vacio() and self.revision(i)):
+                        self.output.append(self.pop())
+                    self.push(i)
 
-            # cuando se encuentra un operador
-            else:
-                while(not self.vacio() and self.revision(i)):
-                    self.output.append(self.pop())
-                self.push(i)
+            # sacar todos los operadores del stack
+            while not self.vacio():
+                self.output.append(self.pop())
 
-        # sacar todos los operadores del stack
-        while not self.vacio():
-            self.output.append(self.pop())
-
-        self.res = "".join(self.output)
+            self.res = "".join(self.output)
+            
+        else:
+            print("Uso incorrecto de parentesis")
         
