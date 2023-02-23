@@ -22,5 +22,6 @@ if conversion.verificar == True:
     afn = AFN(postfix)
     afn.conversion()
     afn.graph_afn()
+    
 else:
     pass

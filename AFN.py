@@ -14,6 +14,7 @@ class AFN():
         self.transiciones_splited = []
         self.simbolos = []
         self.afn_final= []
+        self.verificar = True
 
     def operando(self, caracter):
         if(caracter.isalpha() or caracter == "ε" or caracter.isnumeric()):
@@ -85,6 +86,7 @@ class AFN():
                     self.transiciones_splited.append([c1, "ε", r1])
                     self.transiciones_splited.append([c1, "ε", c2])
                 except:
+                    self.verificar = False
                     print("Error en la gramatica, uso erroneo del * ")
                     
             # si es una concatenacion
@@ -100,6 +102,7 @@ class AFN():
                         end = r12
                     self.transiciones_splited.append([r22, "ε", r11])
                 except:
+                    self.verificar = False
                     print("Error en la gramatica, concatenacion incorrecta ")
                     
             # si es un or
@@ -130,6 +133,7 @@ class AFN():
                     self.transiciones_splited.append([r12, "ε", c2])
                     self.transiciones_splited.append([r22, "ε", c2])
                 except:
+                    self.verificar = False
                     print("Error en la gramatica, uso erroneo del |")
             
             #si es un +
@@ -157,6 +161,7 @@ class AFN():
                     self.transiciones_splited.append([r2, "ε", c2])
                     self.transiciones_splited.append([c1, "ε", r1])
                 except:
+                    self.verificar = False
                     print("Error en la gramatica, uso erroneo del +")
 
             # si es un ?
@@ -189,6 +194,7 @@ class AFN():
                         self.transiciones_splited.append([r1, "ε", end])
                         self.afn_final.remove(r2)
                 except:
+                    self.verificar = False
                     print("Error en la gramatica, uso erroneo del ?")
 
 
@@ -199,65 +205,69 @@ class AFN():
         self.e0 = start
         self.ef = end
 
-        # print(self.afn_final)
-        df = pd.DataFrame(self.afn_final)
-        string_afn = df.to_string()
-        for i in range(len(self.transiciones_splited)):
-            self.transiciones.append(
-                "(" + str(self.transiciones_splited[i][0]) + " - " + str(self.transiciones_splited[i][1]) + " - " + str(self.transiciones_splited[i][2]) + ")")
-        self.transiciones = ', '.join(self.transiciones)
+        if self.verificar == True:
+            # print(self.afn_final)
+            df = pd.DataFrame(self.afn_final)
+            string_afn = df.to_string()
+            for i in range(len(self.transiciones_splited)):
+                self.transiciones.append(
+                    "(" + str(self.transiciones_splited[i][0]) + " - " + str(self.transiciones_splited[i][1]) + " - " + str(self.transiciones_splited[i][2]) + ")")
+            self.transiciones = ', '.join(self.transiciones)
 
-        for i in range(len(self.estados)):
-            if i == len(self.estados)-1:
-                ef = i
-            self.estados_list.append(str(self.estados[i]))
-        self.estados_list = ", ".join(self.estados_list)
+            for i in range(len(self.estados)):
+                if i == len(self.estados)-1:
+                    ef = i
+                self.estados_list.append(str(self.estados[i]))
+            self.estados_list = ", ".join(self.estados_list)
 
-        nombre_archivo = input('\nIngrese el nombre del archivo para guardar el AFN convertido de la Regex -> ')
+            nombre_archivo = input('\nIngrese el nombre del archivo para guardar el AFN convertido de la Regex -> ')
 
-        nombre_archivo = nombre_archivo + '.txt'
+            nombre_archivo = nombre_archivo + '.txt'
 
-        if os.path.exists(nombre_archivo):
-            print("\nArchivo AFN existente")
+            if os.path.exists(nombre_archivo):
+                print("\nArchivo AFN existente")
 
-        else:
-            with open(nombre_archivo, 'a', encoding="utf-8") as f:
-                f.write("AFN  a partir de la Expresión Regular -->")
-                f.write("\n")
-                f.write("Símbolos: "+', '.join(simbolos))
-                f.write("\n")
-                f.write("Estados:  " + str(self.estados_list))
-                f.write("\n")
-                f.write("Estado inicial: { " + str(self.e0) + " }")
-                f.write("\n")
-                f.write("Estados de aceptación: { " + str(ef) + " }")
-                f.write("\n")
-                f.write("Transiciones: " + str(self.transiciones))
-                f.write("\n")
-                f.write(string_afn)
-
-            print("\nArchivo de AFN escrito con éxito")
-    
-    def graph_afn(self, filename='afn'):
-        # Crear grafo
-        g = Digraph('G', filename=filename, format='png')
-        
-        # Agregar nodos
-        for estado in self.estados:
-            if estado == self.e0:
-                g.node(str(estado), shape='doublecircle')
-            elif estado == self.ef:
-                g.node(str(estado), shape='doublecircle')
             else:
-                g.node(str(estado), shape="circle")
-        
-        # Agregar transiciones
-        for transicion in self.transiciones_splited:
-            if transicion[1] == "ε":
-                g.edge(str(transicion[0]), str(transicion[2]), label="ε")
-            else:
-                g.edge(str(transicion[0]), str(transicion[2]), label=transicion[1])
+                with open(nombre_archivo, 'a', encoding="utf-8") as f:
+                    f.write("AFN  a partir de la Expresión Regular -->")
+                    f.write("\n")
+                    f.write("Símbolos: "+', '.join(simbolos))
+                    f.write("\n")
+                    f.write("Estados:  " + str(self.estados_list))
+                    f.write("\n")
+                    f.write("Estado inicial: { " + str(self.e0) + " }")
+                    f.write("\n")
+                    f.write("Estados de aceptación: { " + str(ef) + " }")
+                    f.write("\n")
+                    f.write("Transiciones: " + str(self.transiciones))
+                    f.write("\n")
+                    f.write(string_afn)
+
+                print("\nArchivo de AFN escrito con éxito")
             
-        
-        # Guardar grafo en archivo y convertir a imagen
-        g.render(view=True)
+        else:
+            print("Error")
+            
+    def graph_afn(self, filename='afn'):
+            # Crear grafo
+            g = Digraph('G', filename=filename, format='png')
+            
+            # Agregar nodos
+            for estado in self.estados:
+                if estado == self.e0:
+                    g.node(str(estado), shape='doublecircle')
+                elif estado == self.ef:
+                    g.node(str(estado), shape='doublecircle')
+                else:
+                    g.node(str(estado), shape="circle")
+            
+            # Agregar transiciones
+            for transicion in self.transiciones_splited:
+                if transicion[1] == "ε":
+                    g.edge(str(transicion[0]), str(transicion[2]), label="ε")
+                else:
+                    g.edge(str(transicion[0]), str(transicion[2]), label=transicion[1])
+                
+            
+            # Guardar grafo en archivo y convertir a imagen
+            g.render(view=True)
