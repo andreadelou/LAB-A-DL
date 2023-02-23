@@ -81,7 +81,7 @@ class convertExpression:
             return False
     
      # Funcion principal que retorna la expresion regular a postfix
-    def RegexToPostfix(self, exp):
+    def RegexToPostfix(self, exp): 
         exp = self.addPuntos(exp)
         # se itera sobre cada caracter de la expresion
         for i in exp:
