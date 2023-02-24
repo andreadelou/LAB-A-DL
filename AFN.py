@@ -168,25 +168,26 @@ class AFN():
             elif i == "?":
                 try:
                     r1, r2 = stack.pop()
-                    counter = counter + 1
+                    counter = counter+1
                     c1 = counter
                     if c1 not in self.estados:
                         self.estados.append(c1)
-                    counter = counter + 1
+                        counter = counter+1
                     c2 = counter
                     if c2 not in self.estados:
                         self.estados.append(c2)
                     self.afn_final.append({})
                     self.afn_final.append({})
-                    stack.append([c1, c2])
-                    self.afn_final[c1]['ε'] = r1
-                    self.afn_final[r2]['ε'] = c2
+                    stack.append([c1, r2])
+                    self.afn_final[c1]['ε'] = (r1, c2)
                     if start == r1:
                         start = c1
                     if end == r2:
                         end = c2
-                    self.transiciones_splited.append([c1, "ε", r1])
                     self.transiciones_splited.append([r2, "ε", c2])
+                    self.transiciones_splited.append([r1, "ε", c2])
+                    self.transiciones_splited.append([r1, "ε", r2])
+                    self.transiciones_splited.append([c1, "ε", c2])
                 except:
                     self.verificar = False
                     print("Error en la gramática, uso erróneo del ?")
