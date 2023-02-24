@@ -83,17 +83,17 @@ class convertExpression:
             return False
     
     def revision2(self, exp):
-        bandera = 2
+        bandera = 0
         
         for caracter in exp:
             if caracter == '(' :
-                bandera = bandera - 1
+                bandera = bandera + 1
             if caracter == ')' :
                 bandera = bandera - 1
-                if bandera != 0:
+                if bandera < 0:
                     return False
                 
-        return bandera ==2
+        return bandera ==0
                 
         
             

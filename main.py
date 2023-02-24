@@ -18,7 +18,7 @@ if conversion.verificar == True:
     #Postfix a AFN
     # resultado=AFN(postfix)
     # resultado.conversion()
-
+    #0?(1?)?0*
     afn = AFN(postfix)
     afn.conversion()
     afn.graph_afn()
